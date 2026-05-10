@@ -499,6 +499,7 @@
         <button class="option-btn" data-group="activiteit" data-value="avontuur" onclick="select(this)">🧭 Avontuur</button>
         <button class="option-btn" data-group="activiteit" data-value="terras" onclick="select(this)">🍺 Terras</button>
         <button class="option-btn" data-group="activiteit" data-value="bbq" onclick="select(this)">🍖 BBQ</button>
+        <button class="option-btn" data-group="activiteit" data-value="familiefeest" onclick="select(this)">👨‍👩‍👧‍👦 Familiefeest</button>
       </div>
     </div>
 
@@ -679,6 +680,13 @@
     }
 
     // Extra overrides / additions
+    if (act === 'familiefeest' && color !== 'no') {
+      reason = reason + ' De oom die er iets van zegt doet het zelf ook aan.';
+      tips.unshift(['👔', 'Kies wel een nette korte broek, geen afgeknipte spijkerbroek.']);
+    }
+    if (act === 'familiefeest' && color === 'no') {
+      tips.push(['📸', 'Familiefeest = foto\'s voor altijd. Lang staat netter op de kiekjes.']);
+    }
     if (extra.has('kortebroek_al_aan') && color !== 'no') {
       tips.unshift(['🩳', 'Je hebt hem al aan. Goed bezig, daadkrachtig mens!']);
     }
