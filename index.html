@@ -483,6 +483,7 @@
         <button class="option-btn" data-group="weer" data-value="regen" onclick="select(this)">🌧️ Regen</button>
         <button class="option-btn" data-group="weer" data-value="wind" onclick="select(this)">💨 Winderig</button>
         <button class="option-btn" data-group="weer" data-value="onweer" onclick="select(this)">⛈️ Onweer</button>
+        <button class="option-btn" data-group="weer" data-value="sneeuw" onclick="select(this)">❄️ (Natte) Sneeuw</button>
       </div>
     </div>
 
@@ -500,6 +501,8 @@
         <button class="option-btn" data-group="activiteit" data-value="terras" onclick="select(this)">🍺 Terras</button>
         <button class="option-btn" data-group="activiteit" data-value="bbq" onclick="select(this)">🍖 BBQ</button>
         <button class="option-btn" data-group="activiteit" data-value="familiefeest" onclick="select(this)">👨‍👩‍👧‍👦 Familiefeest</button>
+        <button class="option-btn" data-group="activiteit" data-value="school" onclick="select(this)">🎒 School</button>
+        <button class="option-btn" data-group="activiteit" data-value="vliegen" onclick="select(this)">✈️ Vliegen</button>
       </div>
     </div>
 
@@ -547,6 +550,8 @@
 
   <footer>
     zalikeenkortebroekaandoen.nl &nbsp;•&nbsp; Geen aansprakelijkheid voor koude knieën 🦵❄️
+    <br><br>
+    <em>Merijn</em>
   </footer>
 
 </div>
@@ -593,7 +598,55 @@
     let tips = [];
 
     // --- HARDE REGELS ---
-    if (act === 'werk') {
+    if (weer === 'sneeuw') {
+      verdict = 'ECHT NIET.';
+      emoji = '❄️';
+      color = 'no';
+      reason = 'Het sneeuwt. Er valt sneeuw uit de lucht. Op de grond ligt sneeuw. Een korte broek is hier geen optie, dat is gewoon een slecht idee.';
+      tips = [
+        ['🧤', 'Trek ook handschoenen aan. En een muts. En misschien twee paar sokken.'],
+        ['☃️', 'Sneeuwpret is leuker met warme benen, dat beloven we je.'],
+        ['🏠', 'Of blijf gewoon binnen met een warme deken. Ook een optie.'],
+        ['🌡️', 'Als het sneeuwt is het per definitie te koud voor een korte broek.'],
+      ];
+    }
+    else if (act === 'vliegen') {
+      verdict = 'Mag, maar neem iets mee!';
+      emoji = '✈️';
+      color = 'maybe';
+      reason = 'Vliegen met een korte broek is prima — maar vliegtuigen zijn berucht koud. En op het vliegveld loop je soms kilometers.';
+      tips = [
+        ['🧊', 'Vliegtuigen zijn vaak ijskoud. Neem een trui of lange broek mee in je handbagage.'],
+        ['🪑', 'Blote benen op vliegtuigstoelen: niet het lekkerste gevoel. Een dunne broek over de korte broek doet wonderen.'],
+        ['👟', 'Trek makkelijk zittende schoenen aan — bij de veiligheidscontrole gaan ze toch uit.'],
+        ['🌍', 'Check het weer op je bestemming: misschien is de korte broek daar júist perfect.'],
+      ];
+    }
+    else if (act === 'school') {
+      if (temp >= 18 && weer !== 'regen' && weer !== 'sneeuw') {
+        verdict = 'Ja, prima!';
+        emoji = '🎒';
+        color = 'yes';
+        reason = 'Naar school met een korte broek? Gewoon doen. Zolang het warm genoeg is, is er niets op tegen.';
+        tips = [
+          ['📚', 'Let op: sommige scholen hebben een kledingbeleid. Even checken.'],
+          ['🪑', 'Plastic stoelen en blote benen kunnen kleven. Niet ideaal, maar te overleven.'],
+          ['🌡️', 'De meeste schoolgebouwen zijn lekker koel — neem eventueel iets longs mee voor als het binnen frisser is.'],
+          ['🩳', 'Kies een nette korte broek, geen versleten exemplaar.'],
+        ];
+      } else {
+        verdict = 'Liever niet.';
+        emoji = '👖';
+        color = 'no';
+        reason = 'Bij dit weer is een lange broek op school toch comfortabeler. Je zit de hele dag stil — dan word je snel koud.';
+        tips = [
+          ['🧥', 'Een lange broek houdt je warm tijdens lange lessen.'],
+          ['📖', 'Warme benen = beter kunnen concentreren. Echt waar.'],
+          ['🚲', 'Op de fiets naar school is het altijd een graadje frisser dan je denkt.'],
+        ];
+      }
+    }
+    else if (act === 'werk') {
       verdict = 'NOPE.';
       emoji = '💼';
       color = 'no';
