@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zal ik een korte broek aandoen?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sun: #FFD93D;
+      --sky: #4FC3F7;
+      --grass: #56C271;
+      --warm: #FF6B35;
+      --dark: #1A1A2E;
+      --light: #FFFDF5;
+      --card-bg: rgba(255,255,255,0.85);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ——— ANIMATED SKY BACKGROUND ——— */
+    .sky-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(180deg, #87CEEB 0%, #B0E0FF 50%, #D4F5C0 100%);
+      transition: background 1s ease;
+    }
+    .sky-bg.warm {
+      background: linear-gradient(180deg, #FFB347 0%, #FFD93D 40%, #D4F5C0 100%);
+    }
+    .sky-bg.cold {
+      background: linear-gradient(180deg, #7E8FA6 0%, #A8B8C8 50%, #C5D5C0 100%);
+    }
+    .sky-bg.rain {
+      background: linear-gradient(180deg, #4A5568 0%, #718096 50%, #9CB8A0 100%);
+    }
+
+    /* Clouds */
+    .cloud {
+      position: fixed;
+      top: 8%;
+      background: white;
+      border-radius: 50px;
+      opacity: 0.85;
+      animation: drift linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+    }
+    .c1 { width: 120px; height: 40px; left: -150px; animation-duration: 28s; animation-delay: 0s; top: 7%; }
+    .c1::before { width: 60px; height: 60px; top: -30px; left: 20px; }
+    .c1::after  { width: 40px; height: 40px; top: -20px; left: 55px; }
+    .c2 { width: 90px; height: 30px; left: -120px; animation-duration: 38s; animation-delay: -12s; top: 14%; opacity: 0.6; }
+    .c2::before { width: 45px; height: 45px; top: -22px; left: 15px; }
+    .c2::after  { width: 30px; height: 30px; top: -14px; left: 42px; }
+    .c3 { width: 150px; height: 50px; left: -180px; animation-duration: 45s; animation-delay: -22s; top: 4%; }
+    .c3::before { width: 70px; height: 70px; top: -38px; left: 25px; }
+    .c3::after  { width: 55px; height: 55px; top: -28px; left: 75px; }
+
+    @keyframes drift { from { transform: translateX(-200px); } to { transform: translateX(110vw); } }
+
+    /* Sun */
+    .sun {
+      position: fixed;
+      top: 40px;
+      right: 80px;
+      width: 80px;
+      height: 80px;
+      background: var(--sun);
+      border-radius: 50%;
+      box-shadow: 0 0 0 12px rgba(255,217,61,0.3), 0 0 0 24px rgba(255,217,61,0.15);
+      animation: pulse 3s ease-in-out infinite;
+      z-index: 1;
+      transition: opacity 0.5s;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 12px rgba(255,217,61,0.3), 0 0 0 24px rgba(255,217,61,0.15); }
+      50%       { box-shadow: 0 0 0 18px rgba(255,217,61,0.4), 0 0 0 36px rgba(255,217,61,0.2); }
+    }
+
+    /* Ground stripe */
+    .ground {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(180deg, #56C271 0%, #3DAF5C 100%);
+      z-index: 1;
+    }
+    .ground::before {
+      content: '';
+      position: absolute;
+      top: -20px; left: 0; right: 0;
+      height: 22px;
+      background: radial-gradient(ellipse 30px 15px at 50% 100%, #56C271, transparent) repeat-x;
+      background-size: 40px 100%;
+    }
+
+    /* ——— LAYOUT ——— */
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px 120px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+      animation: slideDown 0.7s cubic-bezier(.2,.8,.3,1) both;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-emoji {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 8px;
+      animation: wobble 2.5s ease-in-out infinite;
+    }
+    @keyframes wobble {
+      0%, 100% { transform: rotate(-5deg); }
+      50%       { transform: rotate(5deg); }
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: var(--dark);
+      line-height: 1.3;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.08);
+    }
+    h1 span { color: var(--warm); }
+
+    .subtitle {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #555;
+      font-weight: 500;
+    }
+
+    /* ——— WIZARD CARD ——— */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 28px 28px 24px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s cubic-bezier(.2,.8,.3,1) both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+
+    .card-title {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ——— FORM ELEMENTS ——— */
+    .question-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    label .emoji { margin-right: 5px; }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .option-btn {
+      padding: 8px 16px;
+      border: 2.5px solid #ddd;
+      background: white;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      color: #444;
+      user-select: none;
+    }
+    .option-btn:hover {
+      border-color: var(--sky);
+      background: #EEF8FF;
+      color: var(--dark);
+    }
+    .option-btn.selected {
+      border-color: var(--warm);
+      background: var(--warm);
+      color: white;
+      transform: scale(1.05);
+      box-shadow: 0 3px 12px rgba(255,107,53,0.35);
+    }
+
+    .temp-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 8px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #4FC3F7, #FFD93D, #FF6B35);
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--warm);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      transition: transform 0.15s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    .temp-display {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.4rem;
+      min-width: 60px;
+      text-align: center;
+      color: var(--warm);
+    }
+
+    /* ——— BIG BUTTON ——— */
+    .cta-btn {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--warm) 0%, #FF9A3C 100%);
+      color: white;
+      font-family: 'Pacifico', cursive;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(255,107,53,0.4);
+      transition: transform 0.18s, box-shadow 0.18s;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+    .cta-btn:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 10px 30px rgba(255,107,53,0.5);
+    }
+    .cta-btn:active { transform: scale(0.98); }
+
+    /* ——— RESULT ——— */
+    #result-section {
+      display: none;
+    }
+    #result-section.visible {
+      display: block;
+      animation: fadeUp 0.5s cubic-bezier(.2,.8,.3,1) both;
+    }
+
+    .result-card {
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.13);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .result-card.yes {
+      background: linear-gradient(135deg, #FFD93D 0%, #FF6B35 100%);
+      color: white;
+    }
+    .result-card.no {
+      background: linear-gradient(135deg, #4FC3F7 0%, #1565C0 100%);
+      color: white;
+    }
+    .result-card.maybe {
+      background: linear-gradient(135deg, #A8EDEA 0%, #FED6E3 100%);
+      color: var(--dark);
+    }
+
+    .result-emoji {
+      font-size: 80px;
+      display: block;
+      margin-bottom: 12px;
+      animation: bounceIn 0.6s cubic-bezier(.2,.8,.3,1) both;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+      70%  { transform: scale(1.15) rotate(5deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+
+    .result-verdict {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      margin-bottom: 12px;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
+
+    .result-reason {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.6;
+      opacity: 0.92;
+      margin-bottom: 20px;
+    }
+
+    .tips-list {
+      text-align: left;
+      background: rgba(255,255,255,0.25);
+      border-radius: 14px;
+      padding: 16px 18px;
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    .tips-list li {
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .tips-list li:last-child { border-bottom: none; }
+
+    .reset-btn {
+      background: rgba(255,255,255,0.3);
+      border: 2.5px solid rgba(255,255,255,0.6);
+      color: inherit;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      padding: 10px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .reset-btn:hover { background: rgba(255,255,255,0.5); }
+
+    /* ——— CONFETTI burst ——— */
+    .confetti-piece {
+      position: fixed;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 999;
+      animation: confettiFall 1.8s ease-in both;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ——— FOOTER ——— */
+    footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #888;
+      margin-top: 20px;
+      padding-bottom: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 28px 14px 110px; }
+      .card { padding: 20px 18px; }
+    }
+
+    /* ——— STATS ——— */
+    .stats-card { animation-delay: 0.15s; }
+    .stats-loading { text-align: center; color: #888; font-size: 0.9rem; padding: 10px 0; }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .stat-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      min-width: 110px;
+      color: #444;
+    }
+    .stat-bar-wrap {
+      flex: 1;
+      background: #eee;
+      border-radius: 50px;
+      height: 16px;
+      overflow: hidden;
+    }
+    .stat-bar {
+      height: 100%;
+      border-radius: 50px;
+      transition: width 0.8s cubic-bezier(.2,.8,.3,1);
+    }
+    .stat-bar.yes  { background: linear-gradient(90deg, #FFD93D, #FF6B35); }
+    .stat-bar.no   { background: linear-gradient(90deg, #4FC3F7, #1565C0); }
+    .stat-bar.maybe { background: linear-gradient(90deg, #A8EDEA, #FED6E3); }
+    .stat-pct {
+      font-weight: 700;
+      font-size: 0.88rem;
+      min-width: 36px;
+      text-align: right;
+      color: #333;
+    }
+    .stat-total {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sky-bg" id="skyBg"></div>
+<div class="cloud c1"></div>
+<div class="cloud c2"></div>
+<div class="cloud c3"></div>
+<div class="sun" id="sun"></div>
+<div class="ground"></div>
+
+<div class="container">
+
+  <header>
+    <span class="logo-emoji">🩳</span>
+    <h1>Zal ik een <span>korte broek</span> aandoen?</h1>
+    <p class="subtitle">De meest serieuze beenkleding-beslissingsassistent van Nederland</p>
+  </header>
+
+  <!-- WIZARD -->
+  <div id="wizard-section">
+
+    <div class="card">
+      <div class="card-title">🌡️ Wat is de temperatuur buiten?</div>
+      <div class="question-group">
+        <div class="temp-slider-wrap">
+          <input type="range" id="tempSlider" min="-10" max="40" value="18" step="1" oninput="updateTemp(this.value)">
+          <div class="temp-display" id="tempDisplay">18°C</div>
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-top:18px">🌤️ Hoe is het weer?</div>
+      <div class="options" id="weer">
+        <button class="option-btn" data-group="weer" data-value="zon" onclick="select(this)">☀️ Zonnig</button>
+        <button class="option-btn" data-group="weer" data-value="bewolkt" onclick="select(this)">⛅ Bewolkt</button>
+        <button class="option-btn" data-group="weer" data-value="regen" onclick="select(this)">🌧️ Regen</button>
+        <button class="option-btn" data-group="weer" data-value="wind" onclick="select(this)">💨 Winderig</button>
+        <button class="option-btn" data-group="weer" data-value="onweer" onclick="select(this)">⛈️ Onweer</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 Wat ga je doen?</div>
+      <div class="options" id="activiteit">
+        <button class="option-btn" data-group="activiteit" data-value="werk" onclick="select(this)">💼 Naar werk</button>
+        <button class="option-btn" data-group="activiteit" data-value="thuis" onclick="select(this)">🏠 Thuisblijven</button>
+        <button class="option-btn" data-group="activiteit" data-value="boodschappen" onclick="select(this)">🛒 Boodschappen</button>
+        <button class="option-btn" data-group="activiteit" data-value="strand" onclick="select(this)">🏖️ Strand</button>
+        <button class="option-btn" data-group="activiteit" data-value="natuur" onclick="select(this)">🌿 Natuur/bos</button>
+        <button class="option-btn" data-group="activiteit" data-value="stad" onclick="select(this)">🏙️ Stad in</button>
+        <button class="option-btn" data-group="activiteit" data-value="sport" onclick="select(this)">⚽ Sporten</button>
+        <button class="option-btn" data-group="activiteit" data-value="avontuur" onclick="select(this)">🧭 Avontuur</button>
+        <button class="option-btn" data-group="activiteit" data-value="terras" onclick="select(this)">🍺 Terras</button>
+        <button class="option-btn" data-group="activiteit" data-value="bbq" onclick="select(this)">🍖 BBQ</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👀 Nog wat extra's</div>
+      <div class="options" id="extra" style="gap:10px">
+        <button class="option-btn" data-group="extra" data-value="oordeel" onclick="selectMulti(this)">👁️ Ik vind andermans oordeel belangrijk</button>
+        <button class="option-btn" data-group="extra" data-value="benen" onclick="selectMulti(this)">🦵 Ik heb mooie benen</button>
+        <button class="option-btn" data-group="extra" data-value="lui" onclick="selectMulti(this)">😴 Ik ben te lui om te wisselen</button>
+        <button class="option-btn" data-group="extra" data-value="kortebroek_al_aan" onclick="selectMulti(this)">🩳 Ik heb al een korte broek aan</button>
+      </div>
+    </div>
+
+    <button class="cta-btn" onclick="advise()">🔮 Vertel me wat ik moet doen!</button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-section">
+    <div class="result-card" id="resultCard">
+      <span class="result-emoji" id="resultEmoji">🩳</span>
+      <div class="result-verdict" id="resultVerdict">Ja!</div>
+      <div class="result-reason" id="resultReason">...</div>
+      <ul class="tips-list" id="tipsList"></ul>
+      <button class="reset-btn" onclick="reset()">↩️ Opnieuw proberen</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="card stats-card" id="statsCard" style="margin-top:20px">
+      <div class="card-title">📊 Wat deden andere bezoekers?</div>
+      <div id="statsContent">
+        <div class="stats-loading">Statistieken laden...</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    zalikeenkortebroekaandoen.nl &nbsp;•&nbsp; Geen aansprakelijkheid voor koude knieën 🦵❄️
+  </footer>
+
+</div>
+
+<script>
+  const answers = { weer: null, activiteit: null, extra: new Set() };
+  let temp = 18;
+
+  function updateTemp(v) {
+    temp = parseInt(v);
+    document.getElementById('tempDisplay').textContent = v + '°C';
+    // Update sky
+    const sky = document.getElementById('skyBg');
+    const sun = document.getElementById('sun');
+    if (v < 5) { sky.className = 'sky-bg cold'; sun.style.opacity = '0.3'; }
+    else if (v < 14) { sky.className = 'sky-bg'; sun.style.opacity = '0.6'; }
+    else if (v >= 25) { sky.className = 'sky-bg warm'; sun.style.opacity = '1'; }
+    else { sky.className = 'sky-bg'; sun.style.opacity = '0.9'; }
+  }
+
+  function select(btn) {
+    const group = btn.dataset.group;
+    document.querySelectorAll(`[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    answers[group] = btn.dataset.value;
+  }
+
+  function selectMulti(btn) {
+    btn.classList.toggle('selected');
+    if (btn.classList.contains('selected')) answers.extra.add(btn.dataset.value);
+    else answers.extra.delete(btn.dataset.value);
+  }
+
+  function advise() {
+    const act = answers.activiteit;
+    const weer = answers.weer;
+    const extra = answers.extra;
+
+    let verdict = 'JA!';
+    let emoji = '🩳';
+    let color = 'yes';
+    let reason = '';
+    let tips = [];
+
+    // --- HARDE REGELS ---
+    if (act === 'werk') {
+      verdict = 'NOPE.';
+      emoji = '💼';
+      color = 'no';
+      reason = `Naar je werk? Vergeet het maar. Korte broek naar kantoor is zo 1998, en ook in ${new Date().getFullYear()} kun je beter niet uitleggen aan je baas waarom je knieën zichtbaar zijn.`;
+      tips = [
+        ['👔', 'Doe gewoon een lange broek aan. Je carrière zal je dankbaar zijn.'],
+        ['🌡️', 'Is het echt te warm op kantoor? Open een raam of drink wat water.'],
+        ['😩', 'Thuiswerken en toch korte broek? Dat is jouw geheim. Niemand hoeft dat te weten.'],
+        ['📸', 'Videovergadering? Boven de tafel altijd netjes, onder de tafel: jouw keuze.'],
+      ];
+    }
+    else if (act === 'natuur' || act === 'avontuur') {
+      verdict = 'LANGE BROEK!';
+      emoji = '🕷️';
+      color = 'no';
+      reason = 'Natuur of avontuur? Denk aan teken! Die kleine beestjes zitten in het hoge gras te wachten op jouw blote benen. Een tekenbeet is geen souvenir.';
+      tips = [
+        ['🦟', 'Teken kunnen de ziekte van Lyme overbrengen. Geen leuke souvenir.'],
+        ['🌿', 'Wandelen door hoog gras? Lange broek in je sokken stoppen: lelijk maar effectief.'],
+        ['🧴', 'Gebruik tekenspray als je toch korte broek draagt. Controleer jezelf daarna.'],
+        ['🐍', 'Bonus: een lange broek beschermt ook tegen brandnetels, bramen en andere wraaknemende planten.'],
+      ];
+    }
+    else if (temp < 8) {
+      verdict = 'ABSOLUUT NIET.';
+      emoji = '🥶';
+      color = 'no';
+      reason = `${temp}°C is best fris. Een lange broek is hier echt de betere keuze voor je comfort.`;
+      tips = [
+        ['🧥', 'Een dikke trui met een korte broek is ook een keuze. Een dappere keuze.'],
+        ['🌡️', 'Ieder mens heeft een andere gevoelstemperatuur — misschien is die van jou gewoon robuust.'],
+        ['🦵', 'Thermoleggings onder de korte broek? Dat is het enige toegestane compromis.'],
+        ['☕', 'Warm jezelf van binnenuit op met een kop thee of koffie. Scheelt ook.'],
+      ];
+    }
+    else if (temp < 15) {
+      verdict = 'Misschien?';
+      emoji = '🤔';
+      color = 'maybe';
+      reason = `${temp}°C is... fris. Sommige mensen noemen dit "lekker weer". Anderen staan te klappertanden. Jij moet dat zelf weten.`;
+      tips = [
+        ['🧣', 'Korte broek + dikke trui + sjaal = de Nederlandse tegenstelling.'],
+        ['☀️', 'Als de zon schijnt voelt het warmer. Houd dat in je achterhoofd.'],
+        ['💪', 'Ben jij zo\'n persoon die in de winter in een t-shirt loopt? Dan is dit warm voor je.'],
+        ['🛒', 'Ga je naar de supermarkt? In de vriesafdeling krijg je gegarandeerd spijt.'],
+      ];
+    }
+    else if (temp >= 15 && temp < 22) {
+      if (weer === 'regen') {
+        verdict = 'Beter van niet.';
+        emoji = '☔';
+        color = 'no';
+        reason = 'Het is misschien warm genoeg, maar het regent. Natte benen zijn niet hetzelfde als het strand.';
+        tips = [
+          ['🌧️', 'Korte broek in de regen: je benen worden koud én nat. Niet ideaal.'],
+          ['🤷', 'Tenzij je het niet erg vindt om snel nat te zijn. Dan is het jouw keuze.'],
+          ['☂️', 'Een paraplu beschermt maar tot je middel, de rest is voor eigen risico.'],
+        ];
+      } else {
+        verdict = 'JA, doe maar!';
+        emoji = '😎';
+        color = 'yes';
+        reason = `${temp}°C is prima kortebroekweer! Niet te warm, niet te koud. Geniet van je benen.`;
+        tips = [
+          ['☀️', 'Smeer zonnebrand als de zon schijnt. Verbrande benen jeuken.'],
+          ['👟', 'Combineer met lekker lichte schoenen of sandalen voor het complete zomerse gevoel.'],
+          ['🧴', 'Hydraterende bodylotion na afloop: for the soft skin life.'],
+        ];
+      }
+    }
+    else if (temp >= 22) {
+      if (act === 'strand') {
+        verdict = 'HOEZO NOG KLEREN?';
+        emoji = '🏖️';
+        color = 'yes';
+        reason = `${temp}°C + strand = korte broek is het minimum. Je zwembroek is ook al prima.`;
+        tips = [
+          ['🌊', 'Zonnebrand factor 50. Geen discussie.'],
+          ['🍦', `Pak een ijsje. Want ${temp}°C en strand vraagt erom.`],
+          ['😎', 'Zonnebril niet vergeten, want je gaat stralen.'],
+          ['🦈', 'In Nederland zijn geen haaien. Maar wel kwallen. FYI.'],
+        ];
+      } else {
+        verdict = 'ABSOLUUT JA!';
+        emoji = '🥵';
+        color = 'yes';
+        reason = `${temp}°C?! Dit is het moment waarvoor de korte broek is uitgevonden. Je benen mogen eindelijk vrij zijn!`;
+        tips = [
+          ['☀️', 'Zonnebrand! Verbrande benen zijn leuk voor 0 mensen.'],
+          ['💧', 'Drink voldoende water. Bij deze temperatuur verlies je snel vocht.'],
+          ['🌡️', 'Bereid je voor dat het straks ook weer 12 graden kan worden. Dit is Nederland.'],
+          ['🎉', 'Geniet. Morgen regent het waarschijnlijk weer.'],
+        ];
+      }
+    }
+
+    // Extra overrides / additions
+    if (extra.has('kortebroek_al_aan') && color !== 'no') {
+      tips.unshift(['🩳', 'Je hebt hem al aan. Goed bezig, daadkrachtig mens!']);
+    }
+    if (extra.has('kortebroek_al_aan') && color === 'no') {
+      tips.push(['😅', 'Je hebt hem al aan, zei je? Tja. You do you!']);
+    }
+    if (extra.has('benen') && color === 'yes') {
+      tips.push(['🦵', 'Mooie benen, zeg je? Toon ze dan ook! Geen excuses.']);
+    }
+    if (extra.has('lui') && color === 'no') {
+      tips.push(['😂', 'Te lui om te wisselen? Begrijpelijk. Maar voor dit keer toch echt de moeite waard.']);
+    }
+
+    // Render
+    const resSection = document.getElementById('result-section');
+    const resCard = document.getElementById('resultCard');
+    document.getElementById('resultEmoji').textContent = emoji;
+    document.getElementById('resultVerdict').textContent = verdict;
+    document.getElementById('resultReason').textContent = reason;
+
+    const tipsList = document.getElementById('tipsList');
+    tipsList.innerHTML = '';
+    tips.forEach(([em, text]) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${em}</span><span>${text}</span>`;
+      tipsList.appendChild(li);
+    });
+
+    resCard.className = 'result-card ' + color;
+
+    document.getElementById('wizard-section').style.display = 'none';
+    resSection.className = 'visible';
+    resSection.style.display = 'block';
+
+    // Confetti als ja
+    if (color === 'yes') spawnConfetti();
+
+    resSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    recordAndShowStats(color);
+  }
+
+
+  // ——— STATISTICS ——— 
+  function recordAndShowStats(color) {
+    try {
+      let stats = { yes: 0, no: 0, maybe: 0 };
+      const saved = localStorage.getItem('kortebroek-stats');
+      if (saved) stats = JSON.parse(saved);
+
+      if (color === 'yes') stats.yes++;
+      else if (color === 'no') stats.no++;
+      else stats.maybe++;
+
+      localStorage.setItem('kortebroek-stats', JSON.stringify(stats));
+      renderStats(stats);
+    } catch(e) {
+      document.getElementById('statsContent').innerHTML =
+        '<div class="stats-loading">Statistieken tijdelijk niet beschikbaar.</div>';
+    }
+  }
+
+  function renderStats(stats) {
+    const total = stats.yes + stats.no + stats.maybe;
+    if (total === 0) return;
+    const pct = v => Math.round(v / total * 100);
+
+    const rows = [
+      { label: '🩳 Korte broek', key: 'yes',   cls: 'yes'   },
+      { label: '👖 Lange broek', key: 'no',    cls: 'no'    },
+      { label: '🤔 Twijfelgeval', key: 'maybe', cls: 'maybe' },
+    ];
+
+    let html = rows.map(r => {
+      const p = pct(stats[r.key]);
+      return `
+        <div class="stat-row">
+          <div class="stat-label">${r.label}</div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar ${r.cls}" style="width:${p}%"></div>
+          </div>
+          <div class="stat-pct">${p}%</div>
+        </div>`;
+    }).join('');
+
+    html += `<div class="stat-total">Gebaseerd op ${total.toLocaleString('nl-NL')} ${total === 1 ? 'bezoeker' : 'bezoekers'}</div>`;
+    document.getElementById('statsContent').innerHTML = html;
+  }
+
+  function reset() {
+    document.getElementById('wizard-section').style.display = 'block';
+    document.getElementById('result-section').className = '';
+    document.getElementById('result-section').style.display = 'none';
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    answers.weer = null;
+    answers.activiteit = null;
+    answers.extra = new Set();
+    document.getElementById('tempSlider').value = 18;
+    updateTemp(18);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function spawnConfetti() {
+    const colors = ['#FFD93D','#FF6B35','#4FC3F7','#56C271','#FF85A1','#A78BFA'];
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        top: -20px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        width: ${6 + Math.random() * 10}px;
+        height: ${6 + Math.random() * 10}px;
+        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+        animation-duration: ${1.2 + Math.random() * 1.5}s;
+        animation-delay: ${Math.random() * 0.6}s;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+  }
+</script>
+</body>
+</html>
