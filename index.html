@@ -513,6 +513,16 @@
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-title">📏 Hoe kort is de korte broek?</div>
+      <div class="options" id="lengte">
+        <button class="option-btn" data-group="lengte" data-value="normaal" onclick="select(this)">👖 Normaal (tot de knie)</button>
+        <button class="option-btn" data-group="lengte" data-value="kort" onclick="select(this)">🩳 Kort (halverwege het been)</button>
+        <button class="option-btn" data-group="lengte" data-value="tekort" onclick="select(this)">😬 Heel kort (bijna niets)</button>
+        <button class="option-btn" data-group="lengte" data-value="weet_niet" onclick="select(this)">🤷 Geen idee</button>
+      </div>
+    </div>
+
     <button class="cta-btn" onclick="advise()">🔮 Vertel me wat ik moet doen!</button>
   </div>
 
@@ -542,7 +552,7 @@
 </div>
 
 <script>
-  const answers = { weer: null, activiteit: null, extra: new Set() };
+  const answers = { weer: null, activiteit: null, extra: new Set(), lengte: null };
   let temp = 18;
 
   function updateTemp(v) {
@@ -574,6 +584,7 @@
     const act = answers.activiteit;
     const weer = answers.weer;
     const extra = answers.extra;
+    const lengte = answers.lengte;
 
     let verdict = 'JA!';
     let emoji = '🩳';
@@ -700,6 +711,30 @@
       tips.push(['😂', 'Te lui om te wisselen? Begrijpelijk. Maar voor dit keer toch echt de moeite waard.']);
     }
 
+    if (lengte === 'tekort') {
+      tips.unshift(['🫣', 'Ben je niet iets vergeten? Dit is wel heel erg kort...']);
+    }
+
+    // Lengte-oordeel
+    if (lengte === 'tekort' && color === 'yes') {
+      tips.push(['📏', 'Wel even checken of de broek lang genoeg is — er is zoiets als té kort voor de gelegenheid.']);
+    }
+    if (lengte === 'tekort' && act === 'werk') {
+      // al afgevangen, maar voor de zekerheid
+    }
+    if (lengte === 'tekort' && (act === 'familiefeest' || act === 'stad' || act === 'boodschappen')) {
+      tips.push(['😬', 'Voor deze gelegenheid is "heel kort" misschien net iets te ambitieus. Een iets langere variant is comfortabeler én gepaster.']);
+    }
+    if (lengte === 'tekort' && act === 'strand') {
+      tips.push(['🏖️', 'Op het strand: prima. Maar vergeet de zonnebrand op die extra stukjes huid niet.']);
+    }
+    if (lengte === 'normaal' && color === 'yes') {
+      tips.push(['👍', 'Tot de knie is altijd een veilige en nette keuze.']);
+    }
+    if (lengte === 'kort' && color === 'yes') {
+      tips.push(['🩳', 'Halverwege het been is een klassieker. Goed gekozen.']);
+    }
+
     // Render
     const resSection = document.getElementById('result-section');
     const resCard = document.getElementById('resultCard');
@@ -783,6 +818,7 @@
     answers.weer = null;
     answers.activiteit = null;
     answers.extra = new Set();
+    answers.lengte = null;
     document.getElementById('tempSlider').value = 18;
     updateTemp(18);
     window.scrollTo({ top: 0, behavior: 'smooth' });
