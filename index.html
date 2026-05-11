@@ -512,6 +512,7 @@
         <button class="option-btn" data-group="extra" data-value="oordeel" onclick="selectMulti(this)">👁️ Ik vind andermans oordeel belangrijk</button>
         <button class="option-btn" data-group="extra" data-value="benen" onclick="selectMulti(this)">🦵 Ik heb mooie benen</button>
         <button class="option-btn" data-group="extra" data-value="lui" onclick="selectMulti(this)">😴 Ik ben te lui om te wisselen</button>
+        <button class="option-btn" data-group="extra" data-value="kouwkleum" onclick="selectMulti(this)">🥶 Ik ben een kouwkleum</button>
         <button class="option-btn" data-group="extra" data-value="was" onclick="selectMulti(this)">🫧 Al mijn lange broeken zitten in de was</button>
       </div>
     </div>
@@ -751,6 +752,13 @@
     if (act === 'familiefeest' && color === 'no') {
       tips.push(['📸', 'Familiefeest = foto\'s voor altijd. Lang staat netter op de kiekjes.']);
     }
+    if (extra.has('kouwkleum')) {
+      tips.unshift(['🥶', 'Als kouwkleum is je grens waarschijnlijk iets hoger dan gemiddeld. Vertrouw op je eigen gevoel!']);
+      if (color === 'yes' && temp < 22) {
+        tips.unshift(['🧣', 'Kouwkleum + korte broek bij deze temperatuur? Neem voor de zekerheid een trui mee.']);
+      }
+    }
+
     if (extra.has('was')) {
       tips.unshift(['🫧', 'Beter een korte broek dan in je onderbroek!']);
     }
