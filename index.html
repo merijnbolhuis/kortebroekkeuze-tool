@@ -490,7 +490,7 @@
     <div class="card">
       <div class="card-title">🎯 Wat ga je doen?</div>
       <div class="options" id="activiteit">
-        <button class="option-btn" data-group="activiteit" data-value="werk" onclick="select(this)">💼 Naar werk</button>
+        <button class="option-btn" data-group="activiteit" data-value="werk" onclick="select(this); showWerkType()">💼 Naar werk</button>
         <button class="option-btn" data-group="activiteit" data-value="thuis" onclick="select(this)">🏠 Thuisblijven</button>
         <button class="option-btn" data-group="activiteit" data-value="boodschappen" onclick="select(this)">🛒 Boodschappen</button>
         <button class="option-btn" data-group="activiteit" data-value="strand" onclick="select(this)">🏖️ Strand</button>
@@ -503,6 +503,17 @@
         <button class="option-btn" data-group="activiteit" data-value="familiefeest" onclick="select(this)">👨‍👩‍👧‍👦 Familiefeest</button>
         <button class="option-btn" data-group="activiteit" data-value="school" onclick="select(this)">🎒 School</button>
         <button class="option-btn" data-group="activiteit" data-value="vliegen" onclick="select(this)">✈️ Vliegen</button>
+      </div>
+
+      <!-- Doorvraag werk -->
+      <div id="werktype-wrap" style="display:none; margin-top:16px; padding-top:16px; border-top: 2px dashed #eee;">
+        <label style="font-weight:700; font-size:0.9rem; color:#333; margin-bottom:8px; display:block;">🏢 Wat voor werk ga je doen?</label>
+        <div class="options" id="werktype">
+          <button class="option-btn" data-group="werktype" data-value="kantoor" onclick="select(this)">🏢 Kantoor</button>
+          <button class="option-btn" data-group="werktype" data-value="buiten" onclick="select(this)">🏗️ Buiten / fysiek</button>
+          <button class="option-btn" data-group="werktype" data-value="klantcontact" onclick="select(this)">🏥 Klantcontact</button>
+          <button class="option-btn" data-group="werktype" data-value="thuis" onclick="select(this)">🏠 Thuiswerken</button>
+        </div>
       </div>
     </div>
 
@@ -558,7 +569,7 @@
 </div>
 
 <script>
-  const answers = { weer: null, activiteit: null, extra: new Set(), lengte: null };
+  const answers = { weer: null, activiteit: null, extra: new Set(), lengte: null, werktype: null };
   let temp = 18;
 
   function updateTemp(v) {
@@ -573,11 +584,22 @@
     else { sky.className = 'sky-bg'; sun.style.opacity = '0.9'; }
   }
 
+  function showWerkType() {
+    document.getElementById('werktype-wrap').style.display = 'block';
+    // hide if another activity is selected later
+  }
+
   function select(btn) {
     const group = btn.dataset.group;
     document.querySelectorAll(`[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     answers[group] = btn.dataset.value;
+    // hide werktype doorvraag if activiteit changed away from werk
+    if (group === 'activiteit' && btn.dataset.value !== 'werk') {
+      document.getElementById('werktype-wrap').style.display = 'none';
+      answers.werktype = null;
+      document.querySelectorAll('[data-group="werktype"]').forEach(b => b.classList.remove('selected'));
+    }
   }
 
   function selectMulti(btn) {
@@ -591,6 +613,7 @@
     const weer = answers.weer;
     const extra = answers.extra;
     const lengte = answers.lengte;
+    const werktype = answers.werktype;
 
     let verdict = 'JA!';
     let emoji = '🩳';
@@ -648,16 +671,60 @@
       }
     }
     else if (act === 'werk') {
-      verdict = 'NOPE.';
-      emoji = '💼';
-      color = 'no';
-      reason = `Naar je werk? Vergeet het maar. Korte broek naar kantoor is zo 1998, en ook in ${new Date().getFullYear()} kun je beter niet uitleggen aan je baas waarom je knieën zichtbaar zijn.`;
-      tips = [
-        ['👔', 'Doe gewoon een lange broek aan. Je carrière zal je dankbaar zijn.'],
-        ['🌡️', 'Is het echt te warm op kantoor? Open een raam of drink wat water.'],
-        ['😩', 'Thuiswerken en toch korte broek? Dat is jouw geheim. Niemand hoeft dat te weten.'],
-        ['📸', 'Videovergadering? Boven de tafel altijd netjes, onder de tafel: jouw keuze.'],
-      ];
+      if (werktype === 'thuis') {
+        verdict = 'JA, gewoon doen!';
+        emoji = '🏠';
+        color = 'yes';
+        reason = 'Thuiswerken? De baas ziet je niet, de buren kunnen het niet schelen en de kat heeft geen mening. Korte broek aan!';
+        tips = [
+          ['💻', 'Videovergadering? Van de taille omhoog altijd netjes, onder de tafel: jouw keuze.'],
+          ['🛋️', 'Comfortabel werken is ook productief werken. Wetenschappelijk bewezen (waarschijnlijk).'],
+          ['☕', 'Geniet van je vrijheid. Dit is wat thuiswerken zo fijn maakt.'],
+        ];
+      } else if (werktype === 'buiten') {
+        if (temp >= 18 && weer !== 'regen' && weer !== 'sneeuw') {
+          verdict = 'JA, prima!';
+          emoji = '🏗️';
+          color = 'yes';
+          reason = 'Buiten of fysiek werk bij lekker weer? Een korte broek is hier juist praktisch. Wel opletten op veiligheid.';
+          tips = [
+            ['🦺', 'Check of een korte broek veilig is voor jouw werk — sommige banen vereisen bescherming.'],
+            ['☀️', 'Smeer zonnebrand op je benen als je lang in de zon staat.'],
+            ['💧', 'Drink genoeg water bij warm en zwaar werk.'],
+            ['🥾', 'Goede schoenen compenseren een hoop — daar geen compromissen.'],
+          ];
+        } else {
+          verdict = 'Liever niet.';
+          emoji = '🌧️';
+          color = 'no';
+          reason = 'Bij dit weer is een korte broek bij buitenwerk niet handig. Natte of koude benen zijn geen fijne werkomstandigheid.';
+          tips = [
+            ['🧥', 'Een stevige werkbroek houdt je warm en beschermt ook nog eens.'],
+            ['🥾', 'Goede laarzen en een lange broek zijn bij dit weer het minimum.'],
+          ];
+        }
+      } else if (werktype === 'klantcontact') {
+        verdict = 'Liever niet.';
+        emoji = '🏥';
+        color = 'no';
+        reason = 'Bij klantcontact — of het nou zorg, winkel of onderwijs is — is een nette uitstraling belangrijk. Een korte broek kan afbreuk doen aan die professionele indruk.';
+        tips = [
+          ['👖', 'Een nette lange broek geeft meer vertrouwen bij klanten en collega\'s.'],
+          ['🌡️', 'Is het echt te warm? Een lichte linnen broek is een goed alternatief.'],
+          ['✅', 'Check of jouw werkplek een kledingbeleid heeft — sommige organisaties zijn flexibeler dan je denkt.'],
+        ];
+      } else {
+        // kantoor of niets geselecteerd
+        verdict = 'NOPE.';
+        emoji = '💼';
+        color = 'no';
+        reason = `Naar kantoor? Vergeet het maar. Korte broek naar kantoor is zo 1998, en ook in ${new Date().getFullYear()} kun je beter niet uitleggen aan je baas waarom je knieën zichtbaar zijn.`;
+        tips = [
+          ['👔', 'Doe gewoon een lange broek aan. Je carrière zal je dankbaar zijn.'],
+          ['🌡️', 'Is het echt te warm op kantoor? Open een raam of drink wat water.'],
+          ['📸', 'Videovergadering? Boven de tafel altijd netjes, onder de tafel: jouw keuze.'],
+        ];
+      }
     }
     else if (act === 'natuur' || act === 'avontuur') {
       verdict = 'LANGE BROEK!';
@@ -884,6 +951,8 @@
     answers.activiteit = null;
     answers.extra = new Set();
     answers.lengte = null;
+    answers.werktype = null;
+    document.getElementById('werktype-wrap').style.display = 'none';
     document.getElementById('tempSlider').value = 18;
     updateTemp(18);
     window.scrollTo({ top: 0, behavior: 'smooth' });
